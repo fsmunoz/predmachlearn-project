@@ -1,0 +1,15 @@
+---
+title: "Predictive Machine Learning Project"
+author: "Frederico Munoz <fsmunoz@gmail.com>"
+date: "25-OCT-2015"
+output: html_document
+---
+
+# Project
+
+This is a test
+
+```{r}
+td <- rnorm(1000)
+plot(td)
+```
