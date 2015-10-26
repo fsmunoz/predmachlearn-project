@@ -3,13 +3,186 @@ title: "Predictive Machine Learning Project"
 author: "Frederico Munoz <fsmunoz@gmail.com>"
 date: "25-OCT-2015"
 output: html_document
+bibliography: predmachlearn-project.bib
 ---
 
-# Project
+This document uses information from the DLA dataset [@ugulino2012wearable]
+# Project Background
 
-This is a test
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now
+possible to collect a large amount of data about personal activity
+relatively inexpensively. These type of devices are part of the
+quantified self movement -- a group of enthusiasts who take
+measurements about themselves regularly to improve their health, to
+find patterns in their behavior, or because they are tech geeks. One
+thing that people regularly do is quantify how much of a particular
+activity they do, but they rarely quantify how well they do it. In
+this project, your goal will be to use data from accelerometers on the
+belt, forearm, arm, and dumbell of 6 participants. They were asked to
+perform barbell lifts correctly and incorrectly in 5 different
+ways. More information is available from the website here:
+http://groupware.les.inf.puc-rio.br/har (see the section on the Weight
+Lifting Exercise Dataset).
 
-```{r}
-td <- rnorm(1000)
-plot(td)
+# Objective
+
+The goal of your project is to predict the manner in which they did
+the exercise. This is the "classe" variable in the training set. This document attempts to address this goal.
+
+# Setting up the environment
+
+First, some initial housecleaning involving loading the needed libraries and importing the needed datasets.
+
+```{r init_data}
+## Load used libraries
+library(caret)
+library(rpart)
+#library(rpart.plot)
+#library(RColorBrewer)
+library(rattle)
+library(randomForest)
 ```
+
+The random seed is set for reproducibly purposes
+```{r set_seed}
+set.seed(6677)
+```
+
+The datasets are available online and so we import them directly.
+```{r import_datasets}
+## Dataset URLs
+pml_training_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+pml_testing_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+
+## Uncomment in the end to avoid fetching at every run
+##pml_training<- read.csv(url(pml_training_url),header = T)
+##pml_testing<- read.csv(url(pml_testing_url),header = T)
+
+## Assign datasets
+pml_testing<- read.csv("pml-testing.csv",header = T)
+pml_training <- read.csv("pml-training.csv", header = T)
+```
+
+# A quick look
+
+Let us take a quick initial look at the training data we now have available
+```{r explore_data}
+str(pml_training)
+```
+
+Lots of information there - 19622 observations of 160 variables to be precise. In particular we will focus on the ??classe?? (which is Portuguese for ??class??) variable which will be the one which we will be predicting.
+```{r explore_data2}
+summary(pml_training$classe)
+plot(pml_training$classe)
+```
+
+# Partitioning the data
+
+We now split the training data into two different sets, training (60%) and testing (40%), using ??classe?? as the outcome.
+
+```{r split_data}
+inTrain <- createDataPartition(y=pml_training$classe, p=0.6, list=FALSE)
+training_set <- pml_training[inTrain, ]
+testing_set <-  pml_training[-inTrain, ]
+```
+
+
+# Cleaning the data
+
+When we took a quick look at the data it was apparent that there were many variables with NA fields. One first approach to improve the quality of the data is to remove variables which are almost always NA (where mostly is determined to be 90%)
+
+```{r clean_remove_na}
+var_is_na <- sapply(training_set, function(x) mean(is.na(x))) > 0.9
+training_set <- training_set[, var_is_na==F]
+str(training_set)
+```
+
+This has reduced the number of variable to 93.
+
+Another step we can take is to remove variables which don't actually vary that much and as such will not really be useful for predictions ^[This step is based on several contributions in the course forum]
+
+```{r clean_remove_no_var}
+nzv <- nearZeroVar(training_set)
+training_set <- training_set[, -nzv]
+```
+
+While many other improvements could be made (including stepwise testing, analysis of variance, etc) we will for this project only do something rather simple on top of the removing those who are mostly NA: remove variables which are obviously not relevant. This include X, user_name, and the timestamps and window variables, all concentrated near the beginning of the dataset whicn is useful for removing them.
+
+```{r clean_remove_non_relevant}
+training_set <- training_set[, -(1:7)]
+str(training_set)
+```
+
+... and we're left with 52 variables.
+
+# Building our model
+
+Armed with a cleaned dataset (or at least cleaner that the one we started with) it's time to build our model. We have decided on a Random Forest model as a starting point since it seemed appropriate to the task at hand.
+
+```{r random_forest_init}
+
+## UNCOMMENT TO RUN THE MODEL FROM SCRATCH
+##rf_model = train(classe ~ ., method="rf", data=training_set)
+## Used once to cache the model, uncomment to overwrite it.
+##saveRDS(rf_model, "rfmodel.rds")
+
+## Load the previously saved model
+rf_model = readRDS("rfmodel.rds")
+
+```
+
+The model is computed ^[And saved, again using a technic debated in the course forum and that avoid redoing the (expensive) calculation every time] and we can see the details
+
+```{r print_model}
+rf_model$finalModel
+plot(rf_model$finalModel)
+```
+
+It chose 500 trees, 26 variables per split and a OOB estimate of error rate of 0.94%. 
+
+# Model Evaluation
+
+We will now use our model on the test date that we split earlier in order to gauge its accuracy: we will be using our model to guess the "classe" of each observation and then check if it was a correct guess.
+
+A simple way to get an idea on the accuracy is simply to get a percentage of correct predictions
+```{r prediction}
+prediction <- predict(rf_model, testing_set)
+mean(prediction == testing_set$class) * 100
+```
+
+Around 99.6%; we can complement this approach with a confusion matrix
+```{r confusion}
+confusionMatrix(testing_set$classe, prediction)
+
+```
+
+As we can see the values match and accuracy is around 99.6%. We perform additional validation by testing the original testing set (see Appendix).
+
+
+# Conclusion
+The model we built to analye the data seems to be acurate to an error margin of FIXME. This is the percentage of predictions which were wrong. With this model we can very accuratly identify good and bad form, at least in terms of the data analysed.
+
+# Appendix 1: Course Project Submission of Test Cases
+
+The second part of the assigment asks to make predictions for each of the 20 tests, write them to a file and submited. In the interest of completeness we have added the steps in this document, based on the instructions themselves ^[cf. https://class.coursera.org/predmachlearn-033/assignment/view?assignment_id=5] and comments in the course discussion forum (as well as individual exploration, of course).
+
+```{r test_cases}
+## Use the original testing set
+prediction <- predict(rf_model, pml_testing)
+## Convert to char vector
+prediction <- as.character(prediction)
+## Function that writes to single files (from the instructions)
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+## Write files
+pml_write_files(prediction)
+```
+
+This should result in individual files ready to be submitted.
+
+# References
