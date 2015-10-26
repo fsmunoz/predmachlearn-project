@@ -155,6 +155,15 @@ confusionMatrix(testing_set$classe, prediction)
 
 As we can see the values match and accuracy is around 99.6%. We perform additional validation by testing the original testing set (see Appendix).
 
+
+Finally we compare the predictions that our model obtained with the real observations in the testing dataset.
+```{r plot_match}
+results <- data.frame(prediction, testing_set$classe)
+ggplot(results, aes(prediction, testing_set.classe)) + geom_jitter(alpha = 0.15,position=position_jitter(width = 0.25, height = 0.25))
+```
+
+The match is very good and reflects the high accuracy of the model.
+
 # Conclusion
 
 The model we built to analye the data seems to be acurate to an error margin of FIXME. This is the percentage of predictions which were wrong. With this model we can very accuratly identify good and bad form, at least in terms of the data analysed.
