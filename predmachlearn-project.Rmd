@@ -168,7 +168,7 @@ The match is very good and reflects the high accuracy of the model.
 
 # Conclusion
 
-The model we built to analye the data seems to be acurate to an error margin of FIXME. This is the percentage of predictions which were wrong. With this model we can very accuratly identify good and bad form, at least in terms of the data analysed.
+The model we built to analye the data seems to be acurate to an error margin of ~0.5%. This is the percentage of predictions which were wrong. With this model we can very accuratly identify good and bad form, at least in terms of the data analysed.
 
 # Appendix 1: Course Project Submission of Test Cases
 
