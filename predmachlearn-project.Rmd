@@ -135,9 +135,10 @@ The model is computed ^[And saved, again using a technic debated in the course f
 
 ```{r print_model}
 rf_model$finalModel
+plot(rf_model$finalModel)
 ```
 
-It chose 500 trees, 26 variables per split and a OOB estimate of error rate of 0.92%. 
+It chose 500 trees, 26 variables per split and a OOB estimate of error rate of 0.94%. 
 
 # Model Evaluation
 
@@ -149,12 +150,14 @@ prediction <- predict(rf_model, testing_set)
 mean(prediction == testing_set$class) * 100
 ```
 
-Around 99%; we can complement this approach with a confusion matrix
+Around 99.6%; we can complement this approach with a confusion matrix
 ```{r confusion}
 confusionMatrix(testing_set$classe, prediction)
+
 ```
 
-As we can see the values match and accuracy is 0.9899. We perform additional validation by testing the original testing set (see Appendix).
+As we can see the values match and accuracy is around 99.6%. We perform additional validation by testing the original testing set (see Appendix).
+
 
 # Conclusion
 The model we built to analye the data seems to be acurate to an error margin of FIXME. This is the percentage of predictions which were wrong. With this model we can very accuratly identify good and bad form, at least in terms of the data analysed.
