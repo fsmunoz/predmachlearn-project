@@ -36,8 +36,7 @@ First, some initial housecleaning involving loading the needed libraries and imp
 ## Load used libraries
 library(caret)
 library(rpart)
-#library(rpart.plot)
-#library(RColorBrewer)
+library(ggplot2)
 library(rattle)
 library(randomForest)
 ```
@@ -69,7 +68,7 @@ Let us take a quick initial look at the training data we now have available
 str(pml_training)
 ```
 
-Lots of information there - 19622 observations of 160 variables to be precise. In particular we will focus on the ??classe?? (which is Portuguese for ??class??) variable which will be the one which we will be predicting.
+Lots of information there - 19622 observations of 160 variables to be precise. In particular we will focus on the "classe"" (which is Portuguese for "class") variable which will be the one which we will be predicting.
 ```{r explore_data2}
 summary(pml_training$classe)
 plot(pml_training$classe)
@@ -77,7 +76,7 @@ plot(pml_training$classe)
 
 # Partitioning the data
 
-We now split the training data into two different sets, training (60%) and testing (40%), using ??classe?? as the outcome.
+We now split the training data into two different sets, training (60%) and testing (40%), using "classe"" as the outcome.
 
 ```{r split_data}
 inTrain <- createDataPartition(y=pml_training$classe, p=0.6, list=FALSE)
@@ -152,13 +151,12 @@ mean(prediction == testing_set$class) * 100
 Around 99.6%; we can complement this approach with a confusion matrix
 ```{r confusion}
 confusionMatrix(testing_set$classe, prediction)
-
 ```
 
 As we can see the values match and accuracy is around 99.6%. We perform additional validation by testing the original testing set (see Appendix).
 
-
 # Conclusion
+
 The model we built to analye the data seems to be acurate to an error margin of FIXME. This is the percentage of predictions which were wrong. With this model we can very accuratly identify good and bad form, at least in terms of the data analysed.
 
 # Appendix 1: Course Project Submission of Test Cases

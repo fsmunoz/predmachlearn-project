@@ -67,8 +67,10 @@ img {
 </div>
 
 
-<p>This document uses information from the DLA dataset <span class="citation">(Ugulino et al. 2012)</span> # Project Background</p>
+<div id="project-background" class="section level1">
+<h1>Project Background</h1>
 <p>Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: <a href="http://groupware.les.inf.puc-rio.br/har" class="uri">http://groupware.les.inf.puc-rio.br/har</a> (see the section on the Weight Lifting Exercise Dataset).</p>
+</div>
 <div id="objective" class="section level1">
 <h1>Objective</h1>
 <p>The goal of your project is to predict the manner in which they did the exercise. This is the “classe” variable in the training set. This document attempts to address this goal.</p>
@@ -81,8 +83,7 @@ library(caret)</code></pre>
 <pre><code>## Loading required package: lattice
 ## Loading required package: ggplot2</code></pre>
 <pre class="r"><code>library(rpart)
-#library(rpart.plot)
-#library(RColorBrewer)
+library(ggplot2)
 library(rattle)</code></pre>
 <pre><code>## Loading required package: RGtk2
 ## Rattle: A free graphical interface for data mining with R.
@@ -211,7 +212,7 @@ pml_training &lt;- read.csv(&quot;pml-training.csv&quot;, header = T)</code></pr
 ##  $ min_yaw_dumbbell        : Factor w/ 73 levels &quot;&quot;,&quot;0.0&quot;,&quot;-0.1&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ amplitude_roll_dumbbell : num  NA NA NA NA NA NA NA NA NA NA ...
 ##   [list output truncated]</code></pre>
-<p>Lots of information there - 19622 observations of 160 variables to be precise. In particular we will focus on the ??classe?? (which is Portuguese for ??class??) variable which will be the one which we will be predicting.</p>
+<p>Lots of information there - 19622 observations of 160 variables to be precise. In particular we will focus on the “classe”&quot; (which is Portuguese for “class”) variable which will be the one which we will be predicting.</p>
 <pre class="r"><code>summary(pml_training$classe)</code></pre>
 <pre><code>##    A    B    C    D    E 
 ## 5580 3797 3422 3216 3607</code></pre>
@@ -220,7 +221,7 @@ pml_training &lt;- read.csv(&quot;pml-training.csv&quot;, header = T)</code></pr
 </div>
 <div id="partitioning-the-data" class="section level1">
 <h1>Partitioning the data</h1>
-<p>We now split the training data into two different sets, training (60%) and testing (40%), using ??classe?? as the outcome.</p>
+<p>We now split the training data into two different sets, training (60%) and testing (40%), using “classe”&quot; as the outcome.</p>
 <pre class="r"><code>inTrain &lt;- createDataPartition(y=pml_training$classe, p=0.6, list=FALSE)
 training_set &lt;- pml_training[inTrain, ]
 testing_set &lt;-  pml_training[-inTrain, ]</code></pre>
@@ -484,7 +485,6 @@ pml_write_files(prediction)</code></pre>
 <p>This should result in individual files ready to be submitted.</p>
 <div class="references">
 <h1>References</h1>
-<p>Ugulino, Wallace, D<span>é</span>bora Cardador, Katia Vega, Eduardo Velloso, Ruy Milidi<span>ú</span>, and Hugo Fuks. 2012. “Wearable Computing: Accelerometers’ Data Classification of Body Postures and Movements.” In <em>Advances in Artificial Intelligence-SBIA 2012</em>, 52–61. Springer.</p>
 </div>
 </div>
 <div class="footnotes">
