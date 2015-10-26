@@ -161,6 +161,7 @@ As we can see the values match and accuracy is around 99.6%. We perform addition
 Finally we compare the predictions that our model obtained with the real observations in the testing dataset.
 ```{r plot_match}
 results <- data.frame(prediction, testing_set$classe)
+table(results)
 ggplot(results, aes(prediction, testing_set.classe)) + geom_jitter(alpha = 0.15,position=position_jitter(width = 0.25, height = 0.25))
 ```
 
