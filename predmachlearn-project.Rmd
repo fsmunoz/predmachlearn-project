@@ -194,4 +194,26 @@ pml_write_files(prediction)
 
 This should result in individual files ready to be submitted.
 
+# Appendix 2: An alternative model
+
+As a complement to the main model we have added one additional approach which was attempted in the process but discarded in the early stages in favour or using Random Forests; this model uses regressive partitioning instead and can be useful to show the differences in model selection.
+
+```{r alt_model}
+rp_model = train(classe ~ ., method="rpart", data=training_set)
+fancyRpartPlot(rp_model$finalModel)
+```
+
+This model has a much lower accuracy -- below 50% actually.
+
+```{r alt_prediction}
+prediction <- predict(rp_model, testing_set)
+mean(prediction == testing_set$class) * 100
+```
+
+The confusion matrix clearly confirms this lack of accuracy.
+
+```{r alt_confusion}
+confusionMatrix(testing_set$classe, prediction)
+```
+
 # References
